@@ -1,6 +1,6 @@
 # risecx_ble
 
-A new Flutter project.
+A new Flutter project wich connects to a emulated bluetooth sensor tag device
 
 ## Getting Started
 
