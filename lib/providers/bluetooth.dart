@@ -22,7 +22,6 @@ class BluetoothProvider with ChangeNotifier {
 
   BluetoothProvider.initialize() {
     initializeBLE();
-    //  searchForDevices();
   }
 
   Future<void> initializeBLE() async {
@@ -35,50 +34,7 @@ class BluetoothProvider with ChangeNotifier {
       //do your BT logic, open different screen, etc.
     });
   }
-
-  /*  Future<void> searchForDevices() async {
-    _toggleScanningStatus(true);
-    try {
-      _bleManager.startPeripheralScan().listen((scanResult) async {
-        //Scan one peripheral and stop scanning
-        print(
-            "Scanned Peripheral ${scanResult.peripheral.name}, RSSI ${scanResult.rssi}");
-        peripheral = scanResult.peripheral;
-
-        // await _connectToPeripheral();
-
-        peripheral
-            .observeConnectionState(
-                emitCurrentValue: true, completeOnDisconnect: true)
-            .listen((connectionState) {
-          print(
-              "Peripheral ${scanResult.peripheral.identifier} connection state is $connectionState");
-        });
-
-        await peripheral.discoverAllServicesAndCharacteristics();
-/* 
-        List<Service> services = await peripheral.services();
-
-        List<Characteristic> characteristics =
-            await services.first?.characteristics(); */
-
-        /*    characteristics.first.monitor().listen((event) {
-          print(
-              '${scanResult.peripheral.identifier} monitoring ${_convertToTemperature(event)} C');
-          temperature = _convertToTemperature(event);
-          notifyListeners();
-        }); */
-        // _bleManager.stopPeripheralScan();
-        _toggleScanningStatus(false);
-        notifyListeners();
-      });
-    } catch (e) {
-      _toggleScanningStatus(false);
-      notifyListeners();
-      throw e;
-    }
-  } */
-
+  
   /* Bluetooth Provider Refactored */
 
   Future<void> disconnectFromPeripheral() async {
