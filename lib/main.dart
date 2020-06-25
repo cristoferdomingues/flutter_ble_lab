@@ -113,14 +113,19 @@ class _MyHomePageState extends State<MyHomePage> {
             _connectedDevices > 0
                 ? Column(
                     children: <Widget>[
-                      Text(
-                        '${_connectedPeripheral?.name ?? 'No Device'}',
-                        style: Theme.of(context).textTheme.headline4,
+                      Align(
+                        child: Text(
+                          '${_connectedPeripheral?.name ?? 'No Device'}',
+                          style: TextStyle(
+                              fontSize: 23, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      Text(
-                        'Device Connected',
-                        style: Theme.of(context).textTheme.bodyText2,
-                      )
+                      Padding(
+                          padding:  const EdgeInsets.only(top:26.0),
+                          child: Text(
+                            'Device Connected',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          )),
                     ],
                   )
                 : PeripheralsList(
