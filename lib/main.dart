@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:provider/provider.dart';
-import 'package:risecx_ble/bluetoohBtn.dart';
+import 'package:risecx_ble/bluetoohBtnWidget.dart';
+import 'package:risecx_ble/peripheralsListWidget.dart';
 import 'package:risecx_ble/providers/bluetooth.dart';
 
 void main() {
@@ -41,7 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int _connectedDevices = 0;
   Peripheral _connectedPeripheral;
   double _temperature = 0;
-
+  List<Peripheral> _scannedPeripherals;
+  BluetoothProvider bluetoothProvider;
   void _onConnectDeviceHandler(Peripheral peripheral) {
     Timer(
         Duration(seconds: 1),
@@ -75,8 +77,24 @@ class _MyHomePageState extends State<MyHomePage> {
             });
   }
 
+  void _onScanPeripheralsHandler(List<Peripheral> scannedPeripherals) {
+    Timer(
+        Duration(seconds: 1),
+        () => {
+              setState(() {
+                _scannedPeripherals = scannedPeripherals;
+              })
+            });
+  }
+
+  void _onPeripheralListClick(Peripheral peripheral) {
+    print('connect to ${peripheral.name}');
+    bluetoothProvider.connectToPeripheral(peripheral);
+  }
+
   @override
   Widget build(BuildContext context) {
+    bluetoothProvider = Provider.of<BluetoothProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -88,8 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Spacer(),
             Text(
-              'You have ',
-              style: Theme.of(context).textTheme.headline3,
+              'You have ${_scannedPeripherals?.length ?? 0} scanned devices',
+              style: Theme.of(context).textTheme.headline5,
             ),
             Spacer(),
             _connectedDevices > 0
@@ -105,17 +123,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                     ],
                   )
-                : Container(),
+                : PeripheralsList(
+                    peripherals: _scannedPeripherals,
+                    onClick: _onPeripheralListClick,
+                  ),
             Spacer(),
             Text(
-              '${_connectedDevices > 0 ? _temperature.toStringAsFixed(1) + 'C' : 0.0}',
+              '${_connectedDevices > 0 ? _temperature.toStringAsFixed(1) + 'C' : ''}',
               style: Theme.of(context).textTheme.headline4,
             ),
             Spacer(),
             BlueToothBtnWidget(
+              ble: bluetoothProvider,
               onConnectDevice: _onConnectDeviceHandler,
               onTemperatureChange: _onTemperatureChange,
               onDisconnectDevice: _onDisconnectDeviceHandler,
+              onScanPeripherals: _onScanPeripheralsHandler,
             ),
             Spacer(),
           ],

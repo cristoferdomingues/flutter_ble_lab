@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 
 import 'providers/providers.dart';
 
@@ -8,11 +7,14 @@ class BlueToothBtnWidget extends StatefulWidget {
   final Function onConnectDevice;
   final Function onDisconnectDevice;
   final Function onTemperatureChange;
+  final Function onScanPeripherals;
+  final BluetoothProvider ble;
   BlueToothBtnWidget(
       {Key key,
       this.onConnectDevice,
       this.onDisconnectDevice,
-      this.onTemperatureChange})
+      this.onTemperatureChange,
+      this.onScanPeripherals, this.ble})
       : super(key: key);
 
   @override
@@ -20,13 +22,13 @@ class BlueToothBtnWidget extends StatefulWidget {
 }
 
 class _BlueToothBtnWidgetState extends State<BlueToothBtnWidget> {
-  var ble;
+ 
   bool _bleLatestConnectionStatus = false;
   @override
   Widget build(BuildContext context) {
-    ble = Provider.of<BluetoothProvider>(context);
-    onConnectionStatusChangeHandler(ble.connected);
-    widget.onTemperatureChange(ble.temperature);
+    onConnectionStatusChangeHandler(widget.ble.connected);
+    widget.onTemperatureChange(widget.ble.temperature);
+    widget.onScanPeripherals(widget.ble.scannedPeripherals);
     return Material(
       color: Colors.transparent,
       child: Center(
@@ -39,7 +41,7 @@ class _BlueToothBtnWidgetState extends State<BlueToothBtnWidget> {
             onPressed: () => _onPressedHadler(),
             iconSize: 24.0,
             tooltip: 'Press to find new bluetooth devices',
-            color: ble.scanning ? Colors.orange : Colors.white,
+            color: widget.ble.scanning ? Colors.orange : Colors.white,
           ),
         ),
       ),
@@ -47,14 +49,16 @@ class _BlueToothBtnWidgetState extends State<BlueToothBtnWidget> {
   }
 
   void _onPressedHadler() {
-    _bleLatestConnectionStatus == false ? ble.searchForDevices() : ble.disconnectFromPeripheral();
+    _bleLatestConnectionStatus == false
+        ? widget.ble.scanPeripherals()
+        : widget.ble.disconnectFromPeripheral();
   }
 
   void onConnectionStatusChangeHandler(bool bleCurrentConnStatus) {
     if (bleCurrentConnStatus != _bleLatestConnectionStatus &&
         bleCurrentConnStatus == true) {
-      if (ble.peripheral != null && widget.onConnectDevice != null)
-        widget.onConnectDevice(ble.peripheral);
+      if (widget.ble.connectedPeripheral != null && widget.onConnectDevice != null)
+        widget.onConnectDevice(widget.ble.connectedPeripheral);
     } else if (bleCurrentConnStatus != _bleLatestConnectionStatus &&
         bleCurrentConnStatus == false) {
       if (widget.onDisconnectDevice != null) widget.onDisconnectDevice();
